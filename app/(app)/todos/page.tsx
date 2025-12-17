@@ -3,7 +3,8 @@ import { requireAuth } from "@/lib/auth";
 import TodosClient from "./components/TodosClient"; 
 
 async function TodoPage() {
-  const user = await requireAuth(); // Esto redirige automáticamente si no hay usuario
+  const user = await requireAuth();
+
   const todoss = await getTodosByUser();
   
   return <TodosClient initialTodos={todoss} user={user} />;

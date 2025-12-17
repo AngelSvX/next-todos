@@ -54,3 +54,37 @@ export const deleteTodoService = async (todo_id: number) => {
     throw error;
   }
 };
+
+export const updateTodoStatusService = async (is_completed: number, user_id: number, todo_id: number) => {
+  try {
+    const query = `
+      UPDATE todos SET todos.is_completed = ?
+      WHERE user_id = ? AND todos.id = ?
+    `;
+
+    const result = await todoDB.execute(query, [is_completed, user_id, todo_id])
+
+    return result
+
+  } catch (error) {
+    throw error
+  }
+};
+
+export const updateTodoTaskService = async (new_task: string, todo_id: number) => {
+  try {
+    const query = `
+      UPDATE todos SET todos.task = ?
+      WHERE todos.id = ?
+    `
+
+    const result = await todoDB.execute(query, [
+      new_task, todo_id
+    ])
+
+    return result
+
+  } catch (error) {
+    throw error
+  }
+}

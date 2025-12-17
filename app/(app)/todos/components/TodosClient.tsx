@@ -4,7 +4,8 @@ import { useState } from "react";
 import { logoutUser } from "@/actions/auth.actions";
 import TodoCreate from "./TodoCreate";
 import { UserPayload } from "@/lib/auth";
-import { deleteTodo } from "@/actions/todos.actions";
+import { deleteTodo, updateTodoStatus } from "@/actions/todos.actions";
+import TodoUpdate from "./TodoUpdate";
 
 interface Todo {
   id: number;
@@ -18,6 +19,9 @@ export default function TodosClient({ initialTodos, user }: {
 }) {
 
   const [open, setOpen] = useState<boolean>(false);
+  const [updateOpen, setUpdateOpen] = useState<boolean>(false)
+  const [todoTitle, setTodoTitle] = useState<string>("")
+  const [todoId, setTodoId] = useState<number>(0)
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8">
@@ -57,8 +61,8 @@ export default function TodosClient({ initialTodos, user }: {
                 type="checkbox"
                 checked={todo.is_completed === 1}
                 onChange={async () => {
-                  // Aquí llamarías a una Server Action para actualizar
-                  // await toggleTodo(todo.id)
+                  const newStatus = todo.is_completed === 0 ? 1 : 0
+                  updateTodoStatus(newStatus, todo.id)
                 }}
                 className="form-checkbox h-5 w-5 text-indigo-500 bg-gray-800 rounded border-gray-600 focus:ring-indigo-500 cursor-pointer"
               />
@@ -68,6 +72,29 @@ export default function TodosClient({ initialTodos, user }: {
               >
                 {todo.task}
               </span>
+              <button className="text-gray-500 hover:text-blue-500 transition duration-150 ease-in-out p-1"
+                onClick={() => {
+                  setTodoTitle(todo.task)
+                  setTodoId(todo.id)
+                  setUpdateOpen(true)
+                }}
+              >
+                <svg
+                  className="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={24}
+                  height={24}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
               <button
                 className="text-gray-500 hover:text-red-500 transition duration-150 ease-in-out p-1"
                 aria-label="Eliminar tarea"
@@ -92,6 +119,13 @@ export default function TodosClient({ initialTodos, user }: {
         open &&
         (
           <TodoCreate setOpen={setOpen} user={user} />
+        )
+      }
+
+      {
+        updateOpen &&
+        (
+          <TodoUpdate setUpdateOpen={setUpdateOpen} todo_task={todoTitle} todo_id={todoId} />
         )
       }
 

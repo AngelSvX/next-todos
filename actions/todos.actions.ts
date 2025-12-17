@@ -5,6 +5,8 @@ import {
   createTodo,
   deleteTodoService,
   getTodosByU,
+  updateTodoStatusService,
+  updateTodoTaskService,
 } from "@/lib/repositories/todos.repository";
 import { revalidatePath } from "next/cache";
 
@@ -40,6 +42,38 @@ export const deleteTodo = async (todo_id: number) => {
   try {
     await deleteTodoService(todo_id);
     revalidatePath("/app/todos");
+    return { success: true };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateTodoStatus = async (
+  is_completed: number,
+  todo_id: number
+) => {
+  const user = await requireAuth();
+
+  try {
+    await updateTodoStatusService(is_completed, user.id, todo_id);
+
+    revalidatePath("/app/todos");
+
+    return { success: true };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateTodoTask = async (formData: FormData, todo_id: number) => {
+  await requireAuth();
+
+  const new_task = formData.get("new_task") as string;
+
+  try {
+    await updateTodoTaskService(new_task, todo_id);
+    revalidatePath("/app/todos");
+
     return { success: true };
   } catch (error) {
     throw error;
