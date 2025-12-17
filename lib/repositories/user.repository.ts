@@ -75,7 +75,7 @@ export async function loginUser({email, password} : LoginUserPayload) {
       jwt.sign(
         {
           id: user.id,
-          name: user.username,
+          username: user.username,
           email: user.email,
         },
         process.env.JWT_KEY as string,

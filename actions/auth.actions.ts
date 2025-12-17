@@ -1,6 +1,8 @@
 "use server";
 
 import { createUser, loginUser } from "@/lib/repositories/user.repository";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function registerUser(formData: FormData) {
   const username = formData.get("username") as string;
@@ -25,6 +27,23 @@ export async function authUser(formdata: FormData) {
     password
   })
 
-  return result
+  const cookieStore = await cookies()
 
+  cookieStore.set({
+    name: "auth-token",
+    value: result.token as string,
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60,
+    path: "/"
+  })
+
+  redirect("/todos")
+
+}
+
+export async function logoutUser(){
+  const cookieStore = await cookies()
+  cookieStore.delete("auth-token")
+  redirect("/login")
 }
